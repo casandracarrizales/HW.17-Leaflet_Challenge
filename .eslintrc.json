@@ -1,6 +1,10 @@
 {
-    "globals": {
-        "d3":true,
-        "L":true
-    }
+  "rules": {
+    "no-unused-vars": ["error", {"args": "none"}],
+    "no-inline-comments": 0
+  },
+  "globals": {
+    "d3": true,
+    "API_KEY": true
+  }
 }

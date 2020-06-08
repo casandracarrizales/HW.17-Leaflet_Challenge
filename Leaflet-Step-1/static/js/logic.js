@@ -4,7 +4,7 @@ var queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function (data) {
-    createFeatures(data.features);
+    console.createFeatures(data.features);
 });
 
 function createFeatures(earthquakeData) {
