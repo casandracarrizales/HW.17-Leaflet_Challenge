@@ -1,70 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the layers-geojson sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/sample-code/layers-geojson/index.html
+  -->
+  <title>Leaflet-Step-2></title>
 
   <style>
-    #map {
-      height: 180px;
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
     }
   </style>
 
-  <title>Leaflet Step-1</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.15/"></script>
 
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
-    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
-    crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
-    integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
-    crossorigin=""></script>
-
-  <!--D3 cdn-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
-
-  <!-- Our CSS -->
-  <link rel="stylesheet" type="text/css" href="static/css/style.css">
+  <script>
+    require([
+      "esri/Map",
+      "esri/layers/GeoJSONLayer",
+      "esri/views/MapView"
+    ], function (Map, GeoJSONLayer, MapView) {
+      // If GeoJSON files are not on the same domain as your website, a CORS enabled server
+      // or a proxy is required.
+      const url =
+        "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
+      // Paste the url into a browser's address bar to download and view the attributes
+      // in the GeoJSON file. These attributes include:
+      // * mag - magnitude
+      // * type - earthquake or other event such as nuclear test
+      // * place - location of the event
+      // * time - the time of the event
+      // Use the Arcade Date() function to format time field into a human-readable format
+      const template = {
+        title: "Earthquake Info",
+        content: "Magnitude {mag} {type} hit {place} on {time}",
+        fieldInfos: [{
+          fieldName: "time",
+          format: {
+            dateFormat: "short-date-short-time"
+          }
+        }]
+      };
+      const renderer = {
+        type: "simple",
+        field: "mag",
+        symbol: {
+          type: "simple-marker",
+          color: "orange",
+          outline: {
+            color: "white"
+          }
+        },
+        visualVariables: [{
+          type: "size",
+          field: "mag",
+          stops: [{
+              value: 2.5,
+              size: "4px"
+            },
+            {
+              value: 8,
+              size: "40px"
+            }
+          ]
+        }]
+      };
+      const geojsonLayer = new GeoJSONLayer({
+        url: url,
+        copyright: "USGS Earthquakes",
+        popupTemplate: template,
+        renderer: renderer //optional
+      });
+      const map = new Map({
+        basemap: "gray",
+        layers: [geojsonLayer]
+      });
+      const view = new MapView({
+        container: "viewDiv",
+        center: [-168, 46],
+        zoom: 3,
+        map: map
+      });
+    });
+  </script>
 </head>
 
 <body>
-
-  <!-- The div that holds our map -->
-  <div id="map"></div>
-
-  <!-- Our JavaScript -->
-  <script type="text/javascript" src="static/js/logic.js"></script>
-  <script>
-    const mymap = L.map(map).setView([0, 0], 13);
-    const marker = L.marker([latitude, longitude]).addTo(mymap);
-
-    const attribution =
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors,';
-    const tileURL =
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-    const tiles = L.tileLayer(tileURL, {
-      attribution
-    });
-    tiles.addTo(mymap);
-
-    const api_url = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png';
-
-    async function getGeoJSON();
-    const reponse = wait;
-    fetch(api_url);
-    const data = await response.json();
-    const {
-      latitude,
-      longtidue
-    } = data;
-
-    document.getElementById('lat').textContent = latitude;
-    document.getELementById('lon').textContent = longitude;
-  </script>
+  <div id="viewDiv"></div>
 </body>
 
 </html>
